@@ -10,10 +10,12 @@
 Arduboy2 arduboy;
 
 int level = 0;
-int cloudIndex=0;
+int cloudIndex = 0;
 boolean jetPacFired = 0;
+boolean buttonBPressed = false;
 byte animToggle;
 unsigned long frameRate;
+unsigned long lastPressed;
 byte jetManState=0;
 
 byte platforms[] = {
@@ -35,14 +37,14 @@ movingObjects gameObjects[10];
 
 void createObjects()
 {
-gameObjects[0] = {1,60,47,0,0,1};
-gameObjects[1] = {12,75,55,0,0,1};
-gameObjects[2] = {11,60,32,0,0,1};
-gameObjects[3] = {10,24,24,0,0,1};
-gameObjects[4] = {22,(float)RANDOMXR,(float)RANDOMY,0.3,0.05,0};
-gameObjects[5] = {22,(float)RANDOMXR,(float)RANDOMY,0.3,0.05,0};
-gameObjects[6] = {22,(float)RANDOMXL,(float)RANDOMY,0.3,0.05,1};
-gameObjects[7] = {2,96,-8,0,0,0};
+        gameObjects[0] = {1,60,47,0,0,1};
+        gameObjects[1] = {12,75,55,0,0,1};
+        gameObjects[2] = {11,60,32,0,0,1};
+        gameObjects[3] = {10,24,24,0,0,1};
+        gameObjects[4] = {22,(float)RANDOMXR,(float)RANDOMY,0.3,0.05,0};
+        gameObjects[5] = {22,(float)RANDOMXR,(float)RANDOMY,0.3,0.05,0};
+        gameObjects[6] = {22,(float)RANDOMXL,(float)RANDOMY,0.3,0.05,1};
+        gameObjects[7] = {2,96,-8,0,0,0};
 }
 
 struct cloudObjects
@@ -54,6 +56,18 @@ struct cloudObjects
 };
 
 cloudObjects clouds[10];
+
+struct laserObjects
+{
+        byte x;
+        byte y;
+        byte length;
+        boolean direction;
+        unsigned long time;
+};
+
+laserObjects laserbeams[20];
+byte laserIndex = 0;
 
 void setup()
 {
@@ -69,6 +83,7 @@ void setup()
         arduboy.initRandomSeed();
         arduboy.setFrameRate(60);
         frameRate = millis();
+        lastPressed = millis();
         createObjects();
 }
 
@@ -330,6 +345,24 @@ void checkButtons()
                 gameObjects[0].xRate = 1;
                 gameObjects[0].direction = 0;
         }
+
+        if((arduboy.pressed(B_BUTTON) == true) && ((millis()-lastPressed)>20) && buttonBPressed==false)
+        {
+                laserbeams[laserIndex].x = gameObjects[0].x + (gameObjects[0].direction ? 10 : -10);
+                laserbeams[laserIndex].length = 1;
+                laserbeams[laserIndex].y = gameObjects[0].y+9;
+                laserbeams[laserIndex].direction = gameObjects[0].direction;
+                laserbeams[laserIndex].time = millis();
+                laserIndex++;
+                if (laserIndex>19) laserIndex=0;
+                buttonBPressed = true;
+        }
+
+        if(arduboy.notPressed(B_BUTTON) == true)
+        {
+                buttonBPressed = false;
+        }
+
 }
 
 void drawClouds()
@@ -360,6 +393,31 @@ void drawClouds()
         }
 }
 
+void drawlasers()
+{
+        for (byte index = 0; index < 20; index++)
+        {
+                if(laserbeams[index].length != 0)
+                {
+                        int beamLength = laserbeams[index].length;
+                        if (beamLength>8) beamLength = 8;
+                        for (int multiplier=0; multiplier<beamLength; multiplier++)
+                        {
+                                if ((laserbeams[index].length>4) && multiplier<4) arduboy.drawBitmap(laserbeams[index].x+((8*multiplier)*(laserbeams[index].direction ? 1 : -1)),laserbeams[index].y, LASER2, 8, 8);
+                                else arduboy.drawBitmap(laserbeams[index].x+((8*multiplier)*(laserbeams[index].direction ? 1 : -1)),laserbeams[index].y, LASER1, 8, 8);
+                        }
+
+                        if ((millis()-laserbeams[index].time)>20)
+                        {
+                                laserbeams[index].length +=1;
+                                if (laserbeams[index].length>8) laserbeams[index].x +=(8*(laserbeams[index].direction ? 1 : -1));
+                                if (laserbeams[index].length>16) laserbeams[index].length = 0;
+                                laserbeams[index].time = millis();
+                        }
+                }
+        }
+}
+
 void loop() {
         if (!arduboy.nextFrame()) return;  // Keep frame rate at 60fps
         arduboy.clear();
@@ -367,6 +425,7 @@ void loop() {
         drawPlatforms();
         drawThings();
         drawClouds();
+        drawlasers();
         moveThings();
         checkButtons();
 
