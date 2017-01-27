@@ -1,8 +1,8 @@
 #define MAX_LEVELS 2
 #define RANDOMXL 0-random(64)
 #define RANDOMXR 128+random(64)
-#define RANDOMY random(56)+8
-#define NUMBEROFOBJECTS 8
+#define RANDOMY random(48)+8
+#define NUMBEROFOBJECTS 7
 
 #include <Arduboy2.h>
 #include "bitmaps.h"
@@ -42,9 +42,8 @@ void createObjects()
         gameObjects[2] = {11,60,32,0,0,1};
         gameObjects[3] = {10,24,24,0,0,1};
         gameObjects[4] = {22,(float)RANDOMXR,(float)RANDOMY,0.3,0.05,0};
-        gameObjects[5] = {22,(float)RANDOMXR,(float)RANDOMY,0.3,0.05,0};
-        gameObjects[6] = {22,(float)RANDOMXL,(float)RANDOMY,0.3,0.05,1};
-        gameObjects[7] = {2,96,-8,0,0,0};
+        gameObjects[5] = {22,(float)RANDOMXL,(float)RANDOMY,0.3,0.05,1};
+        gameObjects[6] = {2,96,-8,0,0,0};
 }
 
 struct cloudObjects
@@ -250,12 +249,14 @@ void moveThings()
 
                 if ((gameObjects[index].type >= 22) && (gameObjects[index].type<=29)) // Move the monsters
                 {
-                        if (((gameObjects[index].x > 127) || (gameObjects[index].x < -7.0)) || ((gameObjects[index].y > 63) || (gameObjects[index].y < -7.0)))
+                        if ((gameObjects[index].x > 127) || (gameObjects[index].x < -7.0))
                         {
                                 gameObjects[index].x = direction ? -7 : 127;
-                                gameObjects[index].y = RANDOMY;
                                 gameObjects[index].xRate = 0.25+((float)random(30)/100);
-                                gameObjects[index].yRate = ((float)random(30)/100)-0.15;
+                        }
+                        if ((gameObjects[index].y > 57) || (gameObjects[index].y < 7))
+                        {
+                                gameObjects[index].yRate = -(gameObjects[index].yRate);
                         }
                 }
 
@@ -310,6 +311,7 @@ void jetPacFire()
         }
         jetPacFired = true;
 }
+
 
 void jetPacRelease()
 {
@@ -405,6 +407,7 @@ void drawlasers()
                         {
                                 if ((laserbeams[index].length>4) && multiplier<4) arduboy.drawBitmap(laserbeams[index].x+((8*multiplier)*(laserbeams[index].direction ? 1 : -1)),laserbeams[index].y, LASER2, 8, 8);
                                 else arduboy.drawBitmap(laserbeams[index].x+((8*multiplier)*(laserbeams[index].direction ? 1 : -1)),laserbeams[index].y, LASER1, 8, 8);
+                                checkForHit(laserbeams[index].x+((8*multiplier)*(laserbeams[index].direction ? 1 : -1)), laserbeams[index].y);
                         }
 
                         if ((millis()-laserbeams[index].time)>20)
@@ -418,6 +421,40 @@ void drawlasers()
         }
 }
 
+void checkForHit(byte laserX, byte laserY)
+{
+        for (int index=0; index<NUMBEROFOBJECTS; index++)
+        {
+                boolean hit=false;
+                byte type = gameObjects[index].type;
+                float x = gameObjects[index].x;
+                float y = gameObjects[index].y;
+                boolean direction = gameObjects[index].direction;
+                float xRate = gameObjects[index].xRate;
+                float yRate = gameObjects[index].yRate;
+
+                if ((laserY>= y && laserY <=y+7) && (laserX>=x && laserX<=x+7))
+                {
+                        hit = true;
+                }
+
+                if (type==22 && hit==true)
+                {
+                        gameObjects[index].x = direction ? -7 : 127;
+                        gameObjects[index].y = RANDOMY;
+                        gameObjects[index].xRate = 0.25+((float)random(30)/100);
+                        gameObjects[index].yRate = ((float)random(30)/100)-0.15;
+
+                        clouds[cloudIndex].state = 1;
+                        clouds[cloudIndex].x = x;
+                        clouds[cloudIndex].y = y;
+                        clouds[cloudIndex].time = millis();
+                        cloudIndex++;
+                        if (cloudIndex>9) cloudIndex=0;
+                }
+        }
+}
+
 void loop() {
         if (!arduboy.nextFrame()) return;  // Keep frame rate at 60fps
         arduboy.clear();
@@ -426,8 +463,8 @@ void loop() {
         drawThings();
         drawClouds();
         drawlasers();
-        moveThings();
         checkButtons();
+        moveThings();
 
         if ((millis()-frameRate)>50)
         {
