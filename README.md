@@ -4,7 +4,7 @@ So after about 30 hours hard work I've finally finished my clone of the classic 
 
 I've tested the game as much as I could but there is no doubt a bug or two left to iron out so please let me know if you find any.
 
-GAME INSTRUCTIONS:
+##GAME INSTRUCTIONS:
 
 You are an astronaut on an alien planet with a Jet Pac. When the game first starts you have to assemble your rocket by picking up the middle and top sections and dropping them onto the bottom section on the ground. Once the rocket is assembled you need to fuel your rocket. Fuel cells (Marked 'F') will drop down and you need to pick them up and drop them onto the rocket. A line along the top of the screen will show you how much fuel your rocket has. Once the line reaches 100% at the top right it will start to flash to indicate your rocket is now ready to board. Jump inside the rocket and take off. The level is now complete.
 
@@ -19,7 +19,7 @@ Every 8 levels the monsters will cycle and you will have 1 more added to their n
 
 Bonus items will drop from time to time and these items will flash. Pick them up for an extra 250 points.
 
-KEYS:
+##KEYS:
 
 Left Button= LEFT
 Right Button= RIGHT
