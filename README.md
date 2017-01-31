@@ -1,4 +1,4 @@
-# ArduBoyJetPack
+# ArduBoy Jet Pac 
 
 So after about 30 hours hard work I've finally finished my clone of the classic ZX Spectrum game 'Jet Pac'. I've tried to recreate the look and feel of the original game as best as I could. The game will get progressively faster with more objects to avoid as the game goes on.
 
