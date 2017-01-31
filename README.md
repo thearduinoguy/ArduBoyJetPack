@@ -21,13 +21,10 @@ Bonus items will drop from time to time and these items will flash. Pick them up
 
 ##KEYS:
 
-Left Button= LEFT
-
-Right Button= RIGHT
-
-UP or A Button = Fire JetPac Thrusters
-
-Down or B Button = Fire Lasers
+Left Button= LEFT  
+Right Button= RIGHT  
+UP or A Button = Fire JetPac Thrusters  
+Down or B Button = Fire Lasers  
 
 Good luck and let me know what your high scores are.
 
