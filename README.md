@@ -4,6 +4,18 @@ So after about 30 hours hard work I've finally finished my clone of the classic 
 
 I've tested the game as much as I could but there is no doubt a bug or two left to iron out so please let me know if you find any.
 
+##IMPORTANT
+
+On first upload, uncomment the following two lines:
+
+        //highScore = 100;   // First time run of program only then comment out and reload
+        //EEPROM.put(SAVELOCATION, highScore);    // First time run of program only
+        
+This will set the EEPROM location that the High Score is stored in to 100.
+Once you have uploaded it then comment these two lines again and then RE-UPLOAD the code a second time. You can now play the game.
+
+If you fail to do this then the High Score may be shown as a very high number.
+
 ##GAME INSTRUCTIONS:
 
 You are an astronaut on an alien planet with a Jet Pac. When the game first starts you have to assemble your rocket by picking up the middle and top sections and dropping them onto the bottom section on the ground. Once the rocket is assembled you need to fuel your rocket. Fuel cells (Marked 'F') will drop down and you need to pick them up and drop them onto the rocket. A line along the top of the screen will show you how much fuel your rocket has. Once the line reaches 100% at the top right it will start to flash to indicate your rocket is now ready to board. Jump inside the rocket and take off. The level is now complete.
