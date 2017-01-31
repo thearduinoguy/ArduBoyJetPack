@@ -14,7 +14,7 @@ You get 25 points for shooting each of the baddies trying to kill you and 100 po
 
 All the while you are doing this, obstacles will be trying to kill you. You need to avoid the obstacles to stay alive. If you get hit you will die. You have 5 lives when the game starts.
 
-Every 5 levels you will have a new rocket to build.
+Every 5 levels you will have a new rocket to build.  
 Every 8 levels the monsters will cycle and you will have 1 more added to their numbers (up to a maximum of 10). They will also get progressively faster as the game progresses.
 
 Bonus items will drop from time to time and these items will flash. Pick them up for an extra 250 points.
