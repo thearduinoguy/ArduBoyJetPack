@@ -103,7 +103,7 @@ void setup()
         arduboy.blank(); // blank the display
         arduboy.flashlight(); // light the RGB LED and screen if UP button is being held.
         arduboy.systemButtons();
-        //arduboy.bootLogo();
+        arduboy.bootLogo();
         arduboy.audio.on();
         arduboy.clear();
         //arduboy.begin();
