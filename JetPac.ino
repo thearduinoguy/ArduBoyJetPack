@@ -1,3 +1,10 @@
+/*
+ArduBoy Jet Pac
+Version 1.1
+2nd Feb 2017
+by Mike McRoberts (a.k.a. TheArduinoGuy)
+*/
+
 #define SAVELOCATION (EEPROM_STORAGE_SPACE_START + 512)
 
 #include <Arduboy2.h>
