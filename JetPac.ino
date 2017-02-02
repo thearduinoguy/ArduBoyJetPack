@@ -14,7 +14,7 @@ byte gameDifficulty = 2;
 byte levelStep = 0;
 byte rocketStep = 0;
 byte monsterType = 0;
-byte gameState = 0;
+byte gameState = 4;
 byte subState = 0;
 unsigned long highScore;
 int8_t lives = 4;
@@ -98,9 +98,7 @@ byte laserIndex = 0;
 // #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=
 void setup()
 {
-        //highScore = 100;   // First time run of program only then comment out and reload
-        //EEPROM.put(SAVELOCATION, highScore);    // First time run of program only
-        Serial.begin(115200);
+        //Serial.begin(115200);
         arduboy.boot(); // raw hardware
         arduboy.blank(); // blank the display
         arduboy.flashlight(); // light the RGB LED and screen if UP button is being held.
@@ -116,8 +114,8 @@ void setup()
         initialiseRocket();
         arduboy.drawSlowXYBitmap(0, 0, JETPACLOADINGSCREEN, 128, 64);
         arduboy.display();
-        EEPROM.get(SAVELOCATION, highScore);
         delay(5000);
+        EEPROM.get(SAVELOCATION, highScore);
 }
 
 float RANDOMXL()
@@ -466,6 +464,7 @@ void rocketLand()
                         if (animToggle>3) animToggle=0;
                         frameRate=millis();
                 }
+                //Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
         } while (bottomRocketY<=55);
         clouds[cloudIndex].state = 1;
         clouds[cloudIndex].x = bottomRocketX;
@@ -617,7 +616,7 @@ void moveThings()
                 {
                         monsters[index].yRate = -(monsters[index].yRate);
                 }
-                if (random(1000) == 500 && monsterType != 0) monsters[index].direction = !monsters[index].direction;
+                if (random(3000) == 1500 && monsterType != 0) monsters[index].direction = !monsters[index].direction;
                 if (random(1000) == 500 && monsterType != 0) monsters[index].yRate = RANDOMYRATE();
 
         }
@@ -968,7 +967,7 @@ void checkJetManHit()
                                 drawThings();
                                 drawClouds();
                                 drawlasers();
-                                Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
+                                //Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
                                 arduboy.display();
                         }
 
@@ -1051,7 +1050,7 @@ void gameOver()
         arduboy.setCursor(60-(2*len),18);
         arduboy.print(score);
         arduboy.display();
-        Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
+        //Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
         delay(5000);
 
         level = 1;
@@ -1113,9 +1112,9 @@ void levelStart()
         arduboy.print(level);
 
         arduboy.display();
-        Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
+        //Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
         do  {
-                // Do nothing till a key is pressed
+                //Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
         } while(arduboy.notPressed(A_BUTTON) && arduboy.notPressed(B_BUTTON));
         sound.tone(1000, 200);
         delay(500);
@@ -1255,6 +1254,107 @@ void pickUpItem()
         }
 }
 
+void menu()
+{
+        boolean up = true;
+
+        while (1)
+        {
+                if( arduboy.pressed(UP_BUTTON) == true ) {
+                        up = true;
+                        arduboy.clear();
+                }
+
+                if( arduboy.pressed(DOWN_BUTTON) == true) {
+                        up = false;
+                        arduboy.clear();
+                }
+
+                if (up == true)
+                {
+                        arduboy.fillCircle(13,23,3);
+                }
+                else
+                {
+                        arduboy.fillCircle(13,43,3);
+                }
+
+                if( arduboy.pressed(A_BUTTON) == true ) {
+                    if (up == true)
+                    {
+                      delay(150);
+                      gameState=0;
+                      break;
+                    }
+                    else
+                    {
+                      delay(150);
+                      eraseEEPROM();
+                      gameState=0;
+                      break;
+                    }
+                }
+                arduboy.setCursor(20,20);
+                arduboy.print("NEW GAME");
+                arduboy.setCursor(20,40);
+                arduboy.print("RESET HIGH SCORE");
+                arduboy.display();
+        }
+}
+
+void eraseEEPROM()
+{
+arduboy.clear();
+          boolean up = false;
+
+          while (1)
+          {
+                  if( arduboy.pressed(UP_BUTTON) == true ) {
+                          up = true;
+                          arduboy.clear();
+                  }
+
+                  if( arduboy.pressed(DOWN_BUTTON) == true) {
+                          up = false;
+                          arduboy.clear();
+                  }
+
+                  if (up == true)
+                  {
+                          arduboy.fillCircle(13,23,3);
+                  }
+                  else
+                  {
+                          arduboy.fillCircle(13,43,3);
+                  }
+
+                  if( arduboy.pressed(A_BUTTON) == true ) {
+                      if (up == true)
+                      {
+                        delay(150);
+                        highScore = 0;   // First time run of program only then comment out and reload
+                        EEPROM.put(SAVELOCATION, highScore);    // First time run of program only
+                        gameState=0;
+                        break;
+                      }
+                      else
+                      {
+                        delay(150);
+                        gameState=0;
+                        break;
+                      }
+                  }
+                  arduboy.setCursor(20,00);
+                  arduboy.print("ARE YOU SURE?");
+                  arduboy.setCursor(20,20);
+                  arduboy.print("YES");
+                  arduboy.setCursor(20,40);
+                  arduboy.print("NO");
+                  arduboy.display();
+          }
+
+}
+
 // #=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=#=
 void loop() {
         if (!arduboy.nextFrame()) return;  // Keep frame rate at 60fps
@@ -1274,8 +1374,11 @@ void loop() {
         case 3:
                 levelComplete();
                 break;
+        case 4:
+                menu();
+                break;
         }
 
-        Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
+        //Serial.write(arduboy.getBuffer(), 128 * 64 / 8);
         arduboy.display();
 }
